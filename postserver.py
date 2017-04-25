@@ -18,8 +18,10 @@ define("port", default=8000, help="run on the given port", type=int)
 
 class IndexHandler(tornado.web.RequestHandler):
     def get(self):
-        imagelist = self.get_argument('imagelist')
-        img_list_json = json.loads(imagelist)
+        #imagelist = self.get_argument('imagelist')
+        #img_list_json = json.loads(imagelist)
+    def post(self):
+        img_list_json = json.loads(self.request.body)
         keys = img_list_json.keys()
         print(keys)
         for key in keys:
@@ -37,13 +39,7 @@ class IndexHandler(tornado.web.RequestHandler):
                 file_Id = file_listNo[j].get('fileId')
                 file_Num = file_listNo[j].get('fileNo')
                 img_url_list ='http://localhost:8000/PAVR/imagelist/' + batch_listNo + '/' + file_Id    #nas
-                #if not os.path.exists(os.path.join(local_path,batch_listNo)):
-                #      os.makedirs(os.path.join(local_path,batch_listNo))
-                #local = os.path.join(local_path,batch_listNo,file_listNo[j])
-                #urllib.urlretrieve(debug_url, local)         #debug_url for debuging, image_url_list for running
                 print img_url_list
-                #image_globs = 'imagelist/' + batch_listNo + '/*'
-                #debug_image_globs = 'example-data/test_m/*'         #use to debug
             print "VR processing"
             print "Upload vr jpg"
             result = 'Succeed'
