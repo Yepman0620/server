@@ -18,7 +18,6 @@ define("port", default=8000, help="run on the given port", type=int)
 
 class IndexHandler(tornado.web.RequestHandler):
     def get(self):
-        #imagelist = self.get_argument('imagelist')
         #img_list_json = json.loads(imagelist)
     def post(self):
         img_list_json = json.loads(self.request.body)
