@@ -11,6 +11,9 @@ import sys
 import glob
 import subprocess
 import re
+from ftplib import FTP
+
+
 
 from tornado.options import define, options
 define("port", default=8000, help="run on the given port", type=int)
@@ -18,7 +21,8 @@ define("port", default=8000, help="run on the given port", type=int)
 
 class IndexHandler(tornado.web.RequestHandler):
     def get(self):
-        #img_list_json = json.loads(imagelist)
+        return
+
     def post(self):
         img_list_json = json.loads(self.request.body)
         keys = img_list_json.keys()
@@ -40,13 +44,22 @@ class IndexHandler(tornado.web.RequestHandler):
                 img_url_list ='http://localhost:8000/PAVR/imagelist/' + batch_listNo + '/' + file_Id    #nas
                 print img_url_list
             print "VR processing"
-            print "Upload vr jpg"
-            result = 'Succeed'
-            debug_filename = 'dbvr***.jpg'
-            #upload_path = os.path.join(os.path.dirname(__file__), 'dbvr***.jpg')
-            callback_url = 'http://localhost:8000/PAVR/imagelist/' + batch_listNo + '/' + 'dbvr***.jpg'
-            print callback_url
-            dict1 = {"batchNo":batch_listNo,"result":result,"file_Id":debug_filename}
+            newname = 'dbd_vr' + batch_listNo + '.jpg'
+            if os.path.isfile('out.jpg'):
+                resultcode = 1
+                result = 'Succeed'
+                os.rename("out.jpg", newname)
+                newname_path = os.path.join(os.path.dirname(__file__), newname)
+                callback_url = 'http://localhost:8000/PAVR/imagelist/' + batch_listNo + '/' + newname
+                '''
+                ftp Upload the file
+                '''
+            else:
+                resultcode = 0
+                result = 'Failed'
+                newname = ''
+            #print callback_url
+            dict1 = {"batchNo":batch_listNo,"resultcode":resultcode,"result":result,"file_Id":newname}
             dict2.setdefault("imageList",[]).append(dict1)
         self.write(json.dumps(dict2))
 
