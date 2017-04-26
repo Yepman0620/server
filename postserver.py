@@ -11,12 +11,14 @@ import sys
 import glob
 import subprocess
 import re
+import run_test
 from ftplib import FTP
 
 
 
 from tornado.options import define, options
 define("port", default=8000, help="run on the given port", type=int)
+local_path = os.path.join(os.path.dirname(__file__),'uftp/imagelist')
 
 
 class IndexHandler(tornado.web.RequestHandler):
@@ -39,10 +41,12 @@ class IndexHandler(tornado.web.RequestHandler):
             batch_listNo = image_listNo[i].get('batchNo')
             file_listNo = image_listNo[i].get('fileList')
             for j in range(0,len(file_listNo)):
-                file_Id = file_listNo[j].get('fileId')
+                file_Id = file_listNo[j].get('fileId')     #filepath
                 file_Num = file_listNo[j].get('fileNo')
                 img_url_list ='http://localhost:8000/PAVR/imagelist/' + batch_listNo + '/' + file_Id    #nas
                 print img_url_list
+            images_path = 'uftp/imagelist/' + batch_listNo + '/*'
+            run_test.test_final_size(images_path)
             print "VR processing"
             newname = 'dbd_vr' + batch_listNo + '.jpg'
             if os.path.isfile('out.jpg'):
@@ -50,10 +54,7 @@ class IndexHandler(tornado.web.RequestHandler):
                 result = 'Succeed'
                 os.rename("out.jpg", newname)
                 newname_path = os.path.join(os.path.dirname(__file__), newname)
-                callback_url = 'http://localhost:8000/PAVR/imagelist/' + batch_listNo + '/' + newname
-                '''
-                ftp Upload the file
-                '''
+                shutil.move(newname, os.path.join(local_path, batch_listNo))
             else:
                 resultcode = 0
                 result = 'Failed'
