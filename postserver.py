@@ -54,7 +54,9 @@ class IndexHandler(tornado.web.RequestHandler):
                 result = 'Succeed'
                 os.rename("out.jpg", newname)
                 newname_path = os.path.join(os.path.dirname(__file__), newname)
-                shutil.move(newname, os.path.join(local_path, batch_listNo))
+                target_path = os.path.join(local_path,batch_listNo)
+                if not os.path.exists(os.path.join(target_path, newname)):
+                    shutil.move(newname, os.path.join(local_path, batch_listNo))
             else:
                 resultcode = 0
                 result = 'Failed'
